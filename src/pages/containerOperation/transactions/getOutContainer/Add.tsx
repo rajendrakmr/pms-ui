@@ -99,7 +99,7 @@ const Add: React.FC = () => {
     };
     // Validation rules
     const validationRules: ValidationRules = {
-        vehicleNo: { required: true, minLength: 10, maxLength: 15 },
+        vehicleNo: { required: true, minLength: 8, maxLength: 15 },
         fromLocId: { required: true, minLength: 2, maxLength: 20 },
         portName: { required: true, minLength: 2, maxLength: 255 },
         locationName: { required: true, minLength: 2, maxLength: 255 },

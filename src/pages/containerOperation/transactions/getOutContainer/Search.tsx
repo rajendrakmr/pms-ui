@@ -297,7 +297,7 @@ const Search: React.FC = () => {
                                     <td><a href="#" onClick={(e) => { e.preventDefault(); handleEdit(row); }}>{row['chit_no']}</a></td>
                                     <td>{row.container_no}</td>
                                     <td>{row.vehicle_no}</td>
-                                    <td>{moment(row.gateOutDateTime).format('MM/DD/YYYY h:mm')}</td>
+                                    <td>{moment(row.gateInDateTime).format('MM/DD/YYYY HH:MM')}</td>
                                     <td>{row.party_cd}</td>
                                     <td>{row.eir}</td>
                                     <td>{row.vessel_no}</td>
