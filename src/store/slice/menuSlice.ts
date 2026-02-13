@@ -42,26 +42,26 @@ const menuSlice = createSlice({
             }
           ]
         },
-        {
-          menuNameTree: "Agent",
-          menuLinkName: "/security",
-          children: [
-            {
-              menuNameTree: "Application",
-              menuLinkName: "/security/transaction",
-              children: [
-                {
-                  menuNameTree: "Ducument Upload",
-                  menuLinkName: "/security/transaction/user-access",
-                  children: [
-                    { menuNameTree: "View", menuLinkName: "/security/transaction/user-access/add" },
-                    { menuNameTree: "Edit", menuLinkName: "/security/transaction/user-access/edit" }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
+        // {
+        //   menuNameTree: "Agent",
+        //   menuLinkName: "/security",
+        //   children: [
+        //     {
+        //       menuNameTree: "Application",
+        //       menuLinkName: "/security/transaction",
+        //       children: [
+        //         {
+        //           menuNameTree: "Ducument Upload",
+        //           menuLinkName: "/security/transaction/user-access",
+        //           children: [
+        //             { menuNameTree: "View", menuLinkName: "/security/transaction/user-access/add" },
+        //             { menuNameTree: "Edit", menuLinkName: "/security/transaction/user-access/edit" }
+        //           ]
+        //         }
+        //       ]
+        //     }
+        //   ]
+        // },
 
         {
           menuNameTree: "Container Operation",

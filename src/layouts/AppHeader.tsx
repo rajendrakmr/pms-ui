@@ -14,6 +14,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import "./Header.css";
 import BredCrumbs from "./BredCrumbs";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 interface HeaderProps<T = any> {
     toggleSidebar?: () => void;
@@ -25,11 +27,15 @@ const Header: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
     const [showProfileModal, setShowProfileModal] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [language, setLanguage] = useState("en");
-
+    const navigate = useNavigate();
     const handleProfileClick = () => setShowProfileModal(true);
     const handleCloseProfileModal = () => setShowProfileModal(false);
     // const toggleTheme = () => setIsDarkMode(!isDarkMode);
-
+    const logout = () => {
+        localStorage.clear()
+        toast.success("Logout Successfully", { position: "top-right", autoClose: 6000 });
+        navigate("/login"); 
+    };
     const toggleTheme = () => {
         setIsDarkMode(!isDarkMode);
         document.body.classList.toggle('dark-mode', !isDarkMode);
@@ -124,7 +130,7 @@ const Header: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
                         </Dropdown.Item>
 
                         <Dropdown.Item
-                            onClick={() => console.log("Logout clicked")}
+                            onClick={(e) => logout(e)}
                             className="d-flex align-items-center gap-2 text-danger"
                         >
                             <FontAwesomeIcon icon={faRightFromBracket} />
