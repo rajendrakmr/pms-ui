@@ -69,6 +69,9 @@ const Index: React.FC = () => {
             isSubmitting(false)
             toast.error('Login failed , Please try again.', { position: "top-right", autoClose: 3000 });
         }
+        finally {
+            isSubmitting(false)
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,8 +141,19 @@ const Index: React.FC = () => {
                                     onChange={handleChange}
                                 />
                                 <div className="d-flex justify-content-end pt-3">
-                                    <button type="submit" disabled={submitting} className="form-control btn btn-success custom-form-control">
+                                    {/* <button type="submit" disabled={submitting} className="form-control btn btn-success custom-form-control">
                                         {submitting ? "Logging in..." : "Login"}
+                                    </button> */}
+                                    <button
+                                        type="submit"
+                                        className={`btn btn-success btn-sm px-4 form-control custom-form-control position-relative ${submitting ? "loading" : ""}`}
+                                        disabled={submitting}
+                                        style={{
+                                            minWidth: "100px"
+                                        }}
+                                    >
+                                        {submitting && <span className="spinner-center"></span>}
+                                        {!submitting && <span className="btn-text">Login</span>}
                                     </button>
                                 </div>
                                 {errors.apiError && (

@@ -29,9 +29,9 @@ const Header: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
     const [language, setLanguage] = useState("en");
     const navigate = useNavigate();
     const handleProfileClick = () => setShowProfileModal(true);
-    const handleCloseProfileModal = () => setShowProfileModal(false);
-    // const toggleTheme = () => setIsDarkMode(!isDarkMode);
-    const logout = () => {
+    const handleCloseProfileModal = () => setShowProfileModal(false); 
+    const logout = (e:any) => {
+        e.preventDefault()
         localStorage.clear()
         toast.success("Logout Successfully", { position: "top-right", autoClose: 6000 });
         navigate("/login"); 
@@ -44,12 +44,10 @@ const Header: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const handleNotificationClick = async () => {
         try {
-            if (document.fullscreenElement) {
-                // If already in fullscreen, exit fullscreen
+            if (document.fullscreenElement) { 
                 await document.exitFullscreen();
                 setIsFullscreen(false);
-            } else {
-                // If not in fullscreen, enter fullscreen
+            } else { 
                 const docElem = document.documentElement as HTMLElement & {
                     mozRequestFullScreen?: () => Promise<void>;
                     webkitRequestFullscreen?: () => Promise<void>;
@@ -72,14 +70,12 @@ const Header: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
         }
     };
 
-    useEffect(() => {
-        // Apply or remove the 'dark-mode' class on body and sidebar based on isDarkMode state
+    useEffect(() => { 
         document.body.classList.toggle('dark-mode', isDarkMode);
         const sidebar = document.querySelector('.rk_sidebar');
         if (sidebar) {
             sidebar.classList.toggle('dark-mode', isDarkMode);
-        }
-        // Save the current mode to localStorage
+        } 
         localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
     }, [isDarkMode]);
 
@@ -90,26 +86,10 @@ const Header: React.FC<HeaderProps> = ({ setIsToggle, isToggle }) => {
             <div className="d-flex align-items-center">
                 <button className="sidebar-toggle btn btn-light me-2" onClick={() => setIsToggle(!isToggle)}>
                     <FontAwesomeIcon icon={faBars} size="lg" />
-                </button>
-                {/* <div className="breadcrumbs d-flex align-items-center ms-1">
-                    <a href="/dashboard" className="breadcrumb-item">Dashboard</a>
-                    <span className="mx-1">/</span>
-
-                    <a href="/transaction" className="breadcrumb-item">Transaction</a>
-                    <span className="mx-1">/</span>
-
-                    <a href="/transaction/gain-in-container" className="breadcrumb-item">
-                        Gain In - Container
-                    </a>
-                    <span className="mx-1">/</span>
-
-                    <span className="breadcrumb-item active">Add</span>
-                </div> */}
+                </button> 
                 <BredCrumbs />
 
-            </div>
-
-            {/* Right Section: Notifications, Theme, Language, and Profile */}
+            </div> 
             <div className="d-flex align-items-center">
 
                 <div className="theme-toggle me-3" onClick={toggleTheme}>
