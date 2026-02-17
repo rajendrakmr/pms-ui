@@ -143,6 +143,7 @@ export const extractUserId = (value: string): string => {
 };
 
 
+export const isCheckedChild = async (row: any, menuId: string) => { return row.some((element: any) => element.menuId !== menuId && element.checked === 1 && element.leaf === 1); }
 export const checkParentMenuCheck = async (row: any, menuId: string) => {
   return row.some((element: any) => element.menuId !== menuId && element.checked === 1 && element.leaf === 1);
 }
