@@ -1,6 +1,8 @@
 
 
 import SubmitBtn from "@/components/Form/SubmitBtn";
+import { faCancel, faReceipt, faRemove, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 interface Props {
     row: any;
@@ -33,16 +35,33 @@ const DpeTableRow: React.FC<Props> = ({
     return (
         <tr>
             <td className="d-flex gap-1">
+                <FontAwesomeIcon
+                    className="mt-2"
+                    onClick={() => {
+                        if (!row?.id && index !== 0) {
+                            deleteRow(index);
+                        }
+                    }}
+                    style={{
+                        fontSize: "20px",
+                        color: row?.id || index === 0 ? "#ccc" : "#dc3545",
+                        cursor: row?.id || index === 0 ? "not-allowed" : "pointer",
+                        pointerEvents: row?.id || index === 0 ? "none" : "auto"
+                    }}
+                    icon={faRemove}
+                />
 
-                <button
+                {/* <FontAwesomeIcon disabled={row?.id || index === 0}
+                    onClick={() => deleteRow(index)} className="pointer" style={{ fontSize: "20px", color: "#dc3545" }} icon={faRemove} /> */}
+                {/* <button
                     style={{ cursor: "pointer" }}
                     disabled={row?.id || index === 0}
                     onClick={() => deleteRow(index)}
-                    className="btn btn-sm btn-danger  custom-form-control pointer"
+                    className="btn btn-sm btn-danger   pointer"
                 >
                     X
-                </button>
-                <button
+                </button> */}
+                {/* <button
                     type="button"
                     className={`btn btn-success btn-sm px-4 custom-form-control position-relative ${inserting?.isInserting && inserting?.index === index ? "loading" : ""}`}
                     disabled={isDisabled || (inserting?.isInserting && inserting?.index === index)}
@@ -54,10 +73,13 @@ const DpeTableRow: React.FC<Props> = ({
                             {isDisabled ? "Paid" : "Insert"}
                         </span>
                     )}
-                </button>
-
+                </button> */}
                 {
-                    row?.id && (
+                    (row?.paymentNo && row?.paymentDate) && <FontAwesomeIcon className="mt-2" style={{ fontSize: "20px", color: "#86b7fe" }} icon={faReceipt} />
+
+                }
+                {
+                   !(row?.paymentNo && row?.paymentDate) && row?.id && (
                         <input
                             type="checkbox"
                             disabled={isDisabled}
@@ -87,6 +109,7 @@ const DpeTableRow: React.FC<Props> = ({
                     isDisabled={isDisabled}
                     classNamePrefix="react-select"
                     menuPortalTarget={document.body}
+                    menuPlacement="top"
                     styles={{
                         control: (base: any, state: any) => ({
                             ...base,
@@ -98,7 +121,7 @@ const DpeTableRow: React.FC<Props> = ({
                             justifyContent: 'space-between',
                             alignItems: 'center',
                             borderColor: state.isDisabled
-                                ? "#4bce86ff"
+                                ? "#ced4da"
                                 : errors?.[`row_${index}`]?.service
                                     ? "#dc3545"
                                     : state.isFocused

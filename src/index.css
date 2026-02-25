@@ -1015,3 +1015,18 @@ thead th {
       #ffffff 296deg 360deg) !important;
 }
  
+
+.form-control:disabled {
+    background-color: var(--bs-secondary-bg) !important;
+    opacity: 1;
+}
+
+.form-control.custom-input-bg {
+  background-color: #fff !important;
+   opacity: 1 !important;
+}
+
+.form-control.custom-winput-bg {
+  background-color: var(--bs-secondary-bg) !important;
+   opacity: 1 !important;
+}

@@ -13,6 +13,7 @@ const menuSlice = createSlice({
   initialState,
   reducers: {
     setMenu: (state, action: PayloadAction<any>) => {
+      console.log('actionactionactionaction', action)
       const dashboardItem = {
         menuNameTree: "Dashboard",
         menuLinkName: "/dashboard",
@@ -109,10 +110,11 @@ const menuSlice = createSlice({
         },
 
       ]
-
+      const itemss: any = action; 
       return {
-        items: items,
+        items: [dashboardItem, ...(itemss?.payload || [])],
       };
+
     },
     clearMenu: (state) => {
       state.items = [];

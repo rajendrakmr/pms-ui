@@ -71,7 +71,7 @@ const RowFormSelectField: React.FC<SelectFormInputProps> = ({
                 alignItems: 'center',
                 padding: '0',
                  borderColor: state.isDisabled
-                  ? "#4bce86ff"         
+                  ? "#e9ecef"         
                   : error
                     ? "#dc3545"
                     : state.isFocused

@@ -57,11 +57,11 @@ const RowFormDateField: React.FC<InputFormFieldProps> = memo(({
                     dateFormat="yyyy-MM-dd"
                     className={`form-control ${error ? 'is-invalid' : ''}`}
                     wrapperClassName="w-100"
-                    style={{
-                        width: '105%',
-                        paddingLeft: '4px',
-                        borderRadius: '0px'
-                    }}
+                    // style={{
+                    //     width: '105%',
+                    //     paddingLeft: '4px',
+                    //     borderRadius: '0px'
+                    // }}
                 />
 
                 {error && (

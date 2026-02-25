@@ -107,8 +107,8 @@ const Search: React.FC = () => {
                     chitNo: item?.chit_no,
                     vehicleNo: item?.vehicle_no,
                     fromLocId: item?.from_loc_id,
-                    locationCode: item?.to_loc_id,
-                    locationName: response?.locationName,
+                    locationCode: "",
+                    locationName: "",
                     txtInTime: moment(item?.gateOutDateTime).format('DD/MM/YYYY h:mm'),
                     impExpTrns: item?.imp_exp_trns,
                     beSbNo: item?.boe_no,
@@ -193,7 +193,7 @@ const Search: React.FC = () => {
 
     const columns: Column[] = [
         { key: "chit_no", label: "Chit No" },
-        { key: "container_no", label: "In Container No" },
+        { key: "container_no", label: "Container No" },
         { key: "vehicle_no", label: "Vehicle No" },
         { key: "gateOutDateTime", label: "Time (DD/MM/YYYY HH:MI)" },
         { key: "party_cd", label: "Agent" },
@@ -231,7 +231,7 @@ const Search: React.FC = () => {
             <form onSubmit={handleSearchForm}>
                 <div className="row">
                     <RowFormInputField row="col-md-3" col1="col-md-4" col2="col-md-8" label="Chit No" name="chitNo" inputValue={formData.chitNo} error={errors.chitNo} onChange={handleChange} />
-                    <RowFormInputField row="col-md-3" col1="col-md-4" col2="col-md-8" label="In Container No" name="containerNo" inputValue={formData.containerNo} error={errors.containerNo} onChange={handleChange} />
+                    <RowFormInputField row="col-md-3" col1="col-md-4" col2="col-md-8" label="Container No" name="containerNo" inputValue={formData.containerNo} error={errors.containerNo} onChange={handleChange} />
                     <RowFormInputField row="col-md-3" col1="col-md-4" col2="col-md-8" label="Vehicle No" name="vehicleNo" inputValue={formData.vehicleNo} error={errors.vehicleNo} onChange={handleChange} />
                     <RowFormInputField row="col-md-3" col1="col-md-4" col2="col-md-8" placeholder="DD-MM-YYYY" label="Time" name="gateOutDate" inputValue={formData.gateOutDate} error={errors.gateOutDate} onChange={handleChange} />
                     <RowFormInputField row="col-md-3" col1="col-md-4" col2="col-md-8" label="Agent" name="agent" inputValue={formData.agent} error={errors.agent} onChange={handleChange} />
@@ -297,7 +297,10 @@ const Search: React.FC = () => {
                                     <td><a href="#" onClick={(e) => { e.preventDefault(); handleEdit(row); }}>{row['chit_no']}</a></td>
                                     <td>{row.container_no}</td>
                                     <td>{row.vehicle_no}</td>
-                                    <td>{moment(row.gateInDateTime).format('MM/DD/YYYY HH:MM')}</td>
+                                    <td>{row.gateOutDateTime
+                                        ? moment.utc(row.gateOutDateTime).local().format('DD/MM/YYYY HH:mm')
+                                        : '-'}
+                                    </td>
                                     <td>{row.party_cd}</td>
                                     <td>{row.eir}</td>
                                     <td>{row.vessel_no}</td>

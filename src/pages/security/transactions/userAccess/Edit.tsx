@@ -1,4 +1,3 @@
-import RowFormInputField from "@/components/Form/RowFormInputField";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { validationRequest, ValidationRules } from "@/utils/validationRequest";
 import { toast } from "react-toastify";
@@ -8,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { apiRequest } from "@/store/services/api";
 import LoadingFetchLoader from "@/components/LoadingFetchLoader";
 import { Link, useNavigate } from "react-router-dom";
-import { checkParentMenuCheck, ChildMenu, flattenMenus, ParentMenu } from "@/utils/commonHelper";
+import { checkParentMenuCheck, checkParentNodeMenuCheck } from "@/utils/commonHelper";
 export interface Column {
     id: number;
     key: string;
@@ -54,14 +53,13 @@ const Add: React.FC = () => {
     const [errors, setErrors] = useState<Record<string, any>>({});
     const [menulist, setMenuList] = useState<any[]>([]);
     const [success, setSuccess] = useState<string>("");
-    const auth = JSON.parse(localStorage.getItem("auth_data") || "null");
     type UserOption = {
         value: string;
         label: string;
     };
     const [userList, setUserList] = useState<UserOption[]>([]);
     const validationRules: ValidationRules = {
-        username: { required: true, minLength: 2, maxLength: 20 },
+        username: { required: true, minLength: 1, maxLength: 255 },
     };
 
     const fetchUserData = async () => {
@@ -95,20 +93,40 @@ const Add: React.FC = () => {
     const [menuRows, setMenuRows] = useState<TableRow[]>([]);
 
 
-    const handleRowChange = useCallback(async (index: number, field: keyof TableRow, row: any) => {
-        const isPreCheck = await checkParentMenuCheck(menuRows, row.menuId);
+    const handleRowChange = useCallback(async (e: any, index: number, field: keyof TableRow, row: any) => {
+        const isPreCheck = await checkParentNodeMenuCheck(menuRows, row.menuId);
         setMenuRows((prev) => {
             const isChecking = row.isChecked ? 0 : 1;
             return prev.map((item: any) => {
                 if (item.rootId !== row.rootId) return item;
                 if (isChecking === 1) {
-                    if (item.menuId === row.menuId || item.leaf === 0) {
+                    if (row.leaf === 1) {
+                        return {
+                            ...item,
+                            checked: 1,
+                            isChecked: 1,
+                        };
+                    } else {
                         return {
                             ...item,
                             checked: 1,
                             isChecked: 1,
                         };
                     }
+                    // if (item.leaf === 0) {
+                    //     return {
+                    //         ...item,
+                    //         checked: 1,
+                    //         isChecked: 1,
+                    //     };
+                    // }
+                    // if (item.menuId === row.menuId || item.leaf === 0) {
+                    // return {
+                    //     ...item,
+                    //     checked: 1,
+                    //     isChecked: 1,
+                    // };
+                    // }
                 }
                 if (isChecking === 0 && isPreCheck) {
                     if (item.menuId === row.menuId) {
@@ -132,25 +150,36 @@ const Add: React.FC = () => {
 
     }, [menuRows]);
 
-    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-    const updateMenus = async () => {
-        await sleep(1000);
-        setMenuRows(menulist);
-    };
+
 
     const handleSelectChange = useCallback(async (selectedOption: any, name: string) => {
-        setLoading(true)
-        const { item } = selectedOption
-        await updateMenus();
-        setLoading(false)
-        const url = `/add-edit/menu?userId=${item?.id}&isAdd=false`;
-        const response = await apiRequest({ url: url, method: "GET" })
-        if (Array.isArray(response.success) && response.success.length > 0) { 
-            setMenuRows(response.success);
-        }
+        try {
+            setLoading(true)
+            const { item } = selectedOption
+            const url = `/add-edit/menu?userId=${item?.id}&isAdd=false`;
+            const response = await apiRequest({ url: url, method: "GET" })
+            if (Array.isArray(response.success) && response.success.length > 0) {
+                const check_record_set = response.success
+                const repo_data = check_record_set.filter((item: any) => item.leaf === 1 && item.checked === 1);
+                const checkedRootIds = [...new Set(repo_data.map((item: any) => item.rootId))];
 
-        setFormData((prev) => ({ ...prev, [name]: item?.name || "", userID: item?.id }));
-        setErrors({})
+                const updatedData = check_record_set.map((item: any) => {
+                    return {
+                        ...item,
+                        checked: item.leaf === 0 && checkedRootIds.includes(item.rootId) ? 1 : item.leaf === 1 && checkedRootIds.includes(item.rootId) ? item.checked : 0,
+                        isChecked: item.leaf === 0 && checkedRootIds.includes(item.rootId) ? 1 : item.leaf === 1 && checkedRootIds.includes(item.rootId) ? item.checked : 0,
+                    };
+                });
+                setMenuRows(updatedData);
+            }
+
+            setFormData((prev) => ({ ...prev, [name]: item?.name || "", userID: item?.id }));
+            setErrors({})
+        } catch (error) {
+
+        }finally{
+            setLoading(false)
+        }
     }, [menulist]);
 
 
@@ -165,7 +194,7 @@ const Add: React.FC = () => {
             return;
         }
         const selectedMenus = menuRows.filter(menu => menu.isChecked).map(menu => ({ moduleId: menu.moduleId, menuId: menu.menuId }));
-        
+
         if (selectedMenus.length === 0) {
             toast.error("Please check at least one menu access.", {
                 position: "top-right",
@@ -272,7 +301,7 @@ const Add: React.FC = () => {
                                     <tr>
                                         <th>Modules</th>
                                         <th>Menus</th>
-                                        <th style={{ width: "15%" }}>
+                                        <th style={{ width: "25%" }}>
                                             Allow Access
                                             {menuRows.length > 0 && <input
                                                 ref={selectAllRef}
@@ -309,25 +338,25 @@ const Add: React.FC = () => {
                                         menuRows && menuRows?.map((row: any, index) => (
                                             <tr key={row.menuId ?? index}>
                                                 {/* <td> <input readOnly style={{ height: "23px", fontSize: "10px", fontWeight: "bold" }} value={row.moduleId} className={`form-control custom-form-control`} />  </td> */}
-                                                <td> <input readOnly style={{ height: "23px", fontSize: "10px", fontWeight: "bold" }} value={row.moduleName ?? ""} className={`form-control custom-form-control`} />  </td>
+                                                <td> <input readOnly style={{ height: "23px", fontSize: "10px", fontWeight: "bold", minHeight: "25px" }} value={row.moduleName ?? ""} className={`form-control custom-form-control`} />  </td>
                                                 {/* <td> <input readOnly style={{ height: "23px", fontSize: "10px", fontWeight: "bold" }} value={row.menuId} className={`form-control custom-form-control`} />  </td> */}
-                                                <td> <input readOnly style={{ height: "23px", fontSize: "10px", fontWeight: "bold" }} value={row.menuNameTree ?? ""} className={`form-control custom-form-control`} />  </td>
+                                                <td> <input readOnly style={{ height: "23px", fontSize: "12px", fontWeight: "bold", minHeight: "25px" }} value={row.menuNameTree ?? ""} className={`form-control custom-form-control`} />  </td>
 
-                                                <td className="text-center align-middle">
+                                                <td className="text-left" style={{ paddingLeft: `${row.level * 20}px`, }}>
                                                     {
 
-                                                        row.leaf !== 0 && <input
+                                                        <input
                                                             type="checkbox"
+                                                            disabled={row.leaf === 0}
                                                             className="form-check-input"
                                                             style={{
-                                                                marginLeft: "37px",
                                                                 borderRadius: "0px",
                                                                 transform: "scale(1.4)",
                                                                 cursor: "pointer",
                                                                 border: "1px solid #023e8a",
                                                             }}
                                                             checked={row?.checked === 1 ? true : false}
-                                                            onChange={(e) => handleRowChange(index, "isChecked", row)}
+                                                            onChange={(e) => handleRowChange(e, index, "isChecked", row)}
                                                         />
                                                     }
                                                 </td>
@@ -343,7 +372,7 @@ const Add: React.FC = () => {
                         </div>
                     </div>
                 </div>
-               
+
                 <div className="d-flex gap-3 justify-content-end">
                     <button
                         type="submit"

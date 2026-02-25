@@ -1,7 +1,7 @@
 export const transhipmentOption = [
     { value: "E", label: "Export" },
     { value: "I", label: "Import" },
-    { value: "T", label: "Transhipment" },
+    // { value: "T", label: "Transhipment" },
 ];
 
 export const fromLocationOption = [
@@ -33,6 +33,13 @@ export const containerStatusOption = [
     { value: "40,Empty", label: "40 Feet Empty" },
     { value: "Above 40,Load", label: "Above 40 Feet Load" },
     { value: "Above 40,Empty", label: "Above 40 Feet Empty" },
+];
+
+
+export const gateInContainerOption = [
+    { value: "20,Load", label: "20 Feet Load" }, 
+    { value: "40,Load", label: "40 Feet Load" }, 
+    { value: "Above 40,Load", label: "Above 40 Feet Load" }, 
 ];
 export const icdFcsOption = [
     { value: "C", label: "CFS" },

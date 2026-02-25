@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import RowFormSelectField from "@/components/Form/RowFormSelectField";
 import RowFormCheckField from "@/components/Form/RowFormCheckField";
 import PopUpCheckBox from "@/components/PopUpCheckBox";
-import { containerStatusOption, fromLocationGateInOption, gateInOption, icdFcsOption, securityOption, statusOption, transhipmentOption, voyageOption } from "@/pages/options";
+import { containerStatusOption, fromLocationGateInOption, gateInContainerOption, gateInOption, icdFcsOption, securityOption, statusOption, transhipmentOption, voyageOption } from "@/pages/options";
 import { setBreadcrumbs } from "@/store/slice/bredCrumbs";
 import { useDispatch } from "react-redux";
 import { apiRequest } from "@/store/services/api";
@@ -32,8 +32,9 @@ const Add: React.FC = () => {
         chitNo: "",
         txtInTime: "",
         vehicleNo: "",
-        fromLocId: "LOC/201",
-        locationName: "",
+        fromLocId: "",
+        fromLocationName: "",
+        locationName: "LOC/201",
         locationCode: "",
         impExpTrns: "",
         beSbNo: "",
@@ -100,12 +101,12 @@ const Add: React.FC = () => {
 
     const validationRules: ValidationRules = {
         vehicleNo: { required: true, minLength: 8, maxLength: 15 },
-        fromLocId: { required: true, minLength: 2, maxLength: 20 },
+        fromLocationName: { required: true, minLength: 1, maxLength: 255 },
         locationName: { required: true, minLength: 2, maxLength: 255 },
         agentNames: { required: true, minLength: 2, maxLength: 255 },
         linerCode: { required: true, minLength: 2, maxLength: 15 },
         linerName: { required: true, minLength: 2, maxLength: 255 },
-        containerNo: { required: true, minLength: 11, maxLength: 11 },
+        containerNo: { required: true, minLength: 11, maxLength: 12 },
         quantity: { required: true, gt: true, minLength: 1, maxLength: 15 },
         portName: { required: true, minLength: 1, maxLength: 255 },
         eir: { required: true, minLength: 2, maxLength: 20 },
@@ -126,8 +127,8 @@ const Add: React.FC = () => {
         const payload = {
             chitNo: formData?.chitNo,
             vehicleNo: formData?.vehicleNo,
-            fromLocId: formData?.fromLocId,
-            toLocId: formData?.locationCode,
+            fromLocId: formData?.locationCode, 
+            toLocId: formData?.locationName,
             impExpTrns: formData?.impExpTrns,
             beSbNo: formData?.beSbNo,
             chAgentCode: formData?.agentCode,
@@ -210,11 +211,11 @@ const Add: React.FC = () => {
                     <RowFormInputField label="In Time" isDefault={true} name="txtInTime" inputValue={formData.txtInTime} error={errors.txtInTime} required onChange={handleChange} />
                     <RowFormInputField label="Vehicle No" max={15} name="vehicleNo" inputValue={formData.vehicleNo} error={errors.vehicleNo} required onChange={handleChange} />
 
-                    <RowFormSelectField name="impExpTrns" label="Imp/Exp/Trans" options={transhipmentOption} value={formData.impExpTrns} error={errors.impExpTrns} onChange={handleSelectChange} isLoading={false} formData={formData} />
-                    <RowFormSelectField name="fromLocId" label="From Location" options={fromLocationGateInOption} value={formData.fromLocId} error={errors.fromLocId} onChange={handleSelectChange} isLoading={false} formData={formData} />
+                    <RowFormSelectField name="impExpTrns" label="Import/Export" options={transhipmentOption} value={formData.impExpTrns} error={errors.impExpTrns} onChange={handleSelectChange} isLoading={false} formData={formData} />
+                    <RowFormCheckField label="From Location" isDefault={true} name="fromLocationName" inputValue={formData.fromLocationName} error={errors.fromLocationName} required onChange={handleChange} click={() => onChangeSelect("gateOutLocation", formData?.fromLocationName)} />
+                    <RowFormSelectField name="locationName" label="To Location" options={fromLocationGateInOption} value={formData.locationName} error={errors.locationName} onChange={handleSelectChange} isLoading={false} formData={formData} />
 
 
-                    <RowFormCheckField label="To Location" isDefault={true} name="locationName" inputValue={formData.locationName} error={errors.locationName} required onChange={handleChange} click={() => onChangeSelect("location", formData.locationName)} />
                     <RowFormInputField label="BE / SB No" max={20} name="beSbNo" inputValue={formData.beSbNo} error={errors.beSbNo} onChange={handleChange} />
                     <RowFormCheckField label="CH Agent Name" isDefault={true} name="agentNames" inputValue={formData.agentNames} error={errors.agentNames} required onChange={handleChange} click={() => onChangeSelect("agent", formData.agentCode)} />
 
@@ -241,7 +242,7 @@ const Add: React.FC = () => {
 
                 <div className="row">
                     <RowFormInputField label="Container No" max={11} type="stupr" name="containerNo" inputValue={formData.containerNo} error={errors.containerNo} required onChange={handleChange} />
-                    <RowFormSelectField name="containerStatus" label="Container Status" options={containerStatusOption} value={formData.containerStatus} error={errors.containerStatus} onChange={handleSelectChange} isLoading={false} formData={formData} />
+                    <RowFormSelectField name="containerStatus" label="Container Status" options={gateInContainerOption} value={formData.containerStatus} error={errors.containerStatus} onChange={handleSelectChange} isLoading={false} formData={formData} />
                     <RowFormCheckField isDefault={true} label="Cargo" name="cargoName" inputValue={formData.cargoName} error={errors.cargoName} onChange={handleChange} click={() => onChangeSelect("cargo", formData.cargoName)} />
                     <RowFormSelectField name="foreignCoastalFlag" label="Voyage" options={voyageOption} value={formData.foreignCoastalFlag} error={errors.foreignCoastalFlag} onChange={handleSelectChange} isLoading={false} formData={formData} />
 

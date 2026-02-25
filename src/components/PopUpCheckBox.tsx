@@ -170,10 +170,11 @@ const PopUpCheckBox: React.FC<SettingsModalProps> = ({
                             }
                         }
                         ) : [];
+ 
                     setFormData((prev: any) => ({
                         ...prev,
                         ...rowData,
-                        details: detail,
+                        serviceDetails: detail,
                         adChitNo: response?.chitNo,
                         adTime: response?.gateInDateTime ? moment(response.gateInDateTime).format("YYYY-MM-DD") : "",
                         containerNo: response?.containerNo,
@@ -183,7 +184,7 @@ const PopUpCheckBox: React.FC<SettingsModalProps> = ({
                         containerSize: response?.containerSize,
                         loadingStatus: response?.loadingStatus,
                         foreignCoastalFlag: response?.foreignCoastalFlag,
-                        delDateTentive: "",
+                        delDateTentive: responseDetail?.success?.tenDeliveryDate ? moment(responseDetail?.success?.tenDeliveryDate,"DD/MM/YYYY").format("YYYY-MM-DD") : "",
                         delDateActual: "",
                     }));
                 } else {

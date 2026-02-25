@@ -52,7 +52,7 @@ const Add: React.FC = () => {
         foreignCoastalFlag: "",
         containerSize: "",
         zoneId: "",
-        details: []
+        serviceDetails: []
     }
 
     const dispatch = useDispatch();
@@ -63,6 +63,7 @@ const Add: React.FC = () => {
     const [modal, setModal] = useState<boolean>(false);
     const [canPay, setCanPay] = useState<boolean>(false);
     const [submitting, setSubmitting] = useState<boolean>(false);
+    const [isPaymenting, setIPaymenting] = useState<boolean>(false);
     const [config, setConfig] = useState<any>({});
     const [adding, setAdding] = useState(false);
     const [inserting, setInserting] = useState({ index: null, isInserting: false });
@@ -123,26 +124,26 @@ const Add: React.FC = () => {
     const handleRowChange = useCallback(
         async (index: number, field: keyof TableRow, value: any) => {
             setFormData((prev: any) => {
-                const rows = [...prev.details];
+                const rows = [...prev.serviceDetails];
                 let row: TableRow = { ...rows[index], [field]: value };
                 if (["rate", "from", "to"].includes(field)) {
                     row = recalculateRow(row);
                 }
                 rows[index] = row;
-                return { ...prev, details: rows };
+                return { ...prev, serviceDetails: rows };
             });
             if (field === "service") {
                 const url = `/rate?serviceId=${value}&containerSize=${formData.containerSize}&loadingStatus=${formData.loadingStatus}&foreignCoastalFlag=${formData.foreignCoastalFlag}`;
                 const rate = await apiRequest({ url, method: "GET" });
                 setFormData((current: any) => {
-                    const updatedRows = [...current.details];
+                    const updatedRows = [...current.serviceDetails];
                     let updatedRow = {
                         ...updatedRows[index],
                         rate,
                     };
                     updatedRow = recalculateRow(updatedRow);
                     updatedRows[index] = updatedRow;
-                    return { ...current, details: updatedRows };
+                    return { ...current, serviceDetails: updatedRows };
                 });
             }
             setErrors((prev) => ({
@@ -200,13 +201,13 @@ const Add: React.FC = () => {
     const handleCalcChange = useCallback((index: number, field: "rate" | "amount" | "gst", rawValue: string) => {
         const value = sanitizeNumber(rawValue, field);
         setFormData((prev: any) => {
-            const rows = [...prev.details];
+            const rows = [...prev.serviceDetails];
             const row = { ...rows[index], [field]: value };
             const amount = Number(row.amount) || 0;
             const gst = Number(row.gst) || 0;
             row.total = Number((amount + (amount * gst) / 100).toFixed(2));
             rows[index] = row;
-            return { ...prev, details: rows };
+            return { ...prev, serviceDetails: rows };
         });
     }, []);
 
@@ -255,7 +256,7 @@ const Add: React.FC = () => {
                 toast.warn("Please add Container Details first before adding new row.", { position: "top-right", autoClose: 6000 });
                 return;
             }
-            const rows = formData?.details || [];
+            const rows = formData?.serviceDetails || [];
             if (rows.length > 0) {
                 const lastIndex = rows.length - 1;
                 const lastRow: any = rows[lastIndex];
@@ -265,7 +266,7 @@ const Add: React.FC = () => {
                     return;
                 }
                 if (!lastRow?.id) {
-                    toast.error("Please insert the current row before adding new row", { position: "top-right", autoClose: 6000 });
+                    toast.error("Please submit the current row before adding new row", { position: "top-right", autoClose: 6000 });
                     return;
                 }
             }
@@ -273,7 +274,7 @@ const Add: React.FC = () => {
 
             const newRow = {
                 cfsNo,
-                cfsDate: "",
+                cfsDate: moment().format("YYYY-MM-DD"),
                 service: "",
                 from: "",
                 to: "",
@@ -288,7 +289,7 @@ const Add: React.FC = () => {
 
             setFormData((prev: any) => ({
                 ...prev,
-                details: [...(prev.details || []), newRow],
+                serviceDetails: [...(prev.serviceDetails || []), newRow],
             }));
 
         } catch (error) {
@@ -302,13 +303,13 @@ const Add: React.FC = () => {
 
     const deleteRow = (index: number) => {
         setFormData((prev: any) => {
-            const rows = [...prev.details];
+            const rows = [...prev.serviceDetails];
             if (rows[index]?.isSaved) {
                 toast.warning("Saved row cannot be deleted");
                 return prev;
             }
             rows.splice(index, 1);
-            return { ...prev, details: rows };
+            return { ...prev, serviceDetails: rows };
         });
         setErrors(prev => {
             const newErrors = { ...prev };
@@ -317,33 +318,33 @@ const Add: React.FC = () => {
         });
     };
     const auth = JSON.parse(localStorage.getItem("auth_data") || "null");
-    const saveRow = useCallback(async (index: number) => {
-        const row = formData.details[index];
-        const isValid = validateRow(row, index);
-        if (!isValid) {
-            toast.error("Please fix row errors before saving");
+    const saveRow = useCallback(async() => {
+        if (!formData?.adChitNo || !formData?.containerNo || !formData?.chAgentName) {
+            toast.warn("Please add Container Details first before adding new row.", { position: "top-right", autoClose: 6000 });
             return;
         }
-        setInserting((prev: any) => { return { ...prev, index: index, isInserting: true }; });
+        const rows = formData?.serviceDetails || [];
+        if (rows.length > 0) {
+            const lastIndex = rows.length - 1;
+            const lastRow: any = rows[lastIndex];
 
-        const item: any = formData?.details[index]
-        if (!item) {
-            toast.error("Please add row and fill the mandatory field.");
-            return;
+            if (!validateRow(lastRow, lastIndex)) {
+                toast.error("Please fill mandatory field row errors before adding new row", { position: "top-right", autoClose: 6000 });
+                return;
+            } 
         }
+
         const payload = {
-            header: {
-                chitNo: formData?.adChitNo,
-                containerNo: formData?.containerNo,
-                gateInDateTime: formData?.adTime ? moment(formData?.adTime, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
-                partyCd: formData?.chAgentCode,
-                agentCustomerName: formData?.chAgentName,
-                boeNo: formData?.shipBillNo,
-                tenDeliveryDate: formData?.delDateTentive ? moment(formData?.delDateTentive, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
-                actDeliveryDate: formData?.delDateActual ? moment(formData?.delDateActual, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
-                zoneId: formData?.zoneId || "",
-            },
-            detail: {
+            chitNo: formData?.adChitNo,
+            containerNo: formData?.containerNo,
+            gateInDateTime: formData?.adTime ? moment(formData?.adTime, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+            partyCd: formData?.chAgentCode,
+            agentCustomerName: formData?.chAgentName,
+            boeNo: formData?.shipBillNo,
+            tenDeliveryDate: formData?.delDateTentive ? moment(formData?.delDateTentive, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+            actDeliveryDate: formData?.delDateActual ? moment(formData?.delDateActual, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
+            zoneId: formData?.zoneId || "",
+            serviceDetails: formData?.serviceDetails?.map((item: any) => ({
                 ...(item?.id && { id: item?.id }),
                 cfsNo: item?.cfsNo,
                 cfsDate: item?.cfsDate ? moment(item?.cfsDate, "YYYY-MM-DD").format("DD/MM/YYYY") : "",
@@ -358,14 +359,18 @@ const Add: React.FC = () => {
                 gst: item?.gst || 0,
                 totalVal: item?.totalVal,
                 paymentNo: item?.paymentNo,
-                paymentDate: item.paymentDate ? item?.paymentDate : "",
+                paymentDate: item?.paymentDate || "",
                 serviceRemarks: item?.remarks,
                 cancelFlag: "N",
-            }
+            })) 
         }
+
+       setSubmitting(true)
+       
         try {
             const url = `/service/charge/add-edit?userId=${auth?.userID}`
             const response = await apiRequest({ url, method: "POST", data: payload })
+            console.log('responseresponse',response)
             toast.success("Row inserted successfully", { position: "top-right", autoClose: 6000 });
 
             const detail: any[] = response?.success && response?.success?.serviceDetails?.length
@@ -398,16 +403,16 @@ const Add: React.FC = () => {
 
             setFormData((prev: any) => ({
                 ...prev,
-                details: detail,
+                serviceDetails: detail,
             }));
         } catch (err) {
             console.error(err);
             toast.error("Failed to save row");
         } finally {
-            setInserting((prev: any) => { return { ...prev, index: null, isInserting: false }; });
-
+            setSubmitting(false)
+            setInserting((prev: any) => { return { ...prev, index: null, isInserting: false }; }); 
         }
-    }, [auth])
+    }, [auth,formData])
 
     const handleRazorpayPayment = () => {
         const totalAmount = paymentRecord.reduce((sum: any, row: any) => sum + (row.totalVal || 0), 0);
@@ -421,7 +426,7 @@ const Add: React.FC = () => {
 
 
     useEffect(() => {
-        const rows = formData?.details || [];
+        const rows = formData?.serviceDetails || [];
         if (rows.length > 0) {
             const lastRow: any = rows[rows.length - 1];
             const hasId = Object.prototype.hasOwnProperty.call(lastRow, "id");
@@ -432,8 +437,8 @@ const Add: React.FC = () => {
 
     const onConfirmPayment = () => {
         setConfirmPaymentModal(false);
-        setProcessingPayment(true); 
-        const totalAmount = 10 
+        setProcessingPayment(true);
+        const totalAmount = 10
         // try {
         //     const options = {
         //         key: "rzp_test_RLf4v1l3wkKW6r",
@@ -471,11 +476,11 @@ const Add: React.FC = () => {
             <div className="row">
                 <RowFormCheckField label="Container No" name="containerNo" inputValue={formData.containerNo} error={errors.containerNo} required onChange={handleChange} click={() => onChangeSelect("container", formData.containerNo)} />
                 <RowFormInputField label="Admission Chit No" name="adChitNo" isDefault={true} inputValue={formData.adChitNo} error={errors.adChitNo} onChange={handleChange} />
-                <RowFormInputField label="Admission Time" name="adTime" isDefault={true} inputValue={formData.adTime} error={errors.adTime} onChange={handleChange} />
+                <RowFormInputField label="Admission Time" type="date" name="adTime" isDefault={true} inputValue={formData.adTime} error={errors.adTime} onChange={handleChange} />
                 <RowFormInputField label="CH Agent Name" name="chAgentName" isDefault={true} inputValue={formData.chAgentName} error={errors.chAgentName} onChange={handleChange} />
                 <RowFormInputField label="Shipping Bill No" name="shipBillNo" isDefault={true} inputValue={formData.shipBillNo} error={errors.shipBillNo} onChange={handleChange} />
                 <RowFormInputField type="date" label="Delivery Date (Tentative)" name="delDateTentive" inputValue={formData.delDateTentive} error={errors.delDateTentive} onChange={handleChange} />
-                <RowFormInputField label="Delivery Date (Actual)" name="delDateActual" isDefault={true} inputValue={formData.delDateActual} error={errors.delDateActual} onChange={handleChange} />
+                {/* <RowFormInputField label="Delivery Date (Actual)" name="delDateActual" isDefault={true} inputValue={formData.delDateActual} error={errors.delDateActual} onChange={handleChange} /> */}
             </div>
             <div className="text-white px-3 mb-3 mt-2 fw-bold" style={{ backgroundColor: "#023e8a" }}>
                 <span style={{ fontSize: "12px" }}>
@@ -489,7 +494,7 @@ const Add: React.FC = () => {
                             <thead style={{ backgroundColor: "#023e8a" }}>
                                 <tr>
 
-                                    <th style={{ minWidth: "140px" }}>Action</th>
+                                    <th style={{ minWidth: "70px" }}>Action</th>
                                     <th style={{ minWidth: "155px" }}>CFS No<span className="text-danger">*</span></th>
                                     <th>CFS Date<span className="text-danger">*</span></th>
                                     <th style={{ minWidth: "200px" }}>Service<span className="text-danger">*</span></th>
@@ -508,7 +513,7 @@ const Add: React.FC = () => {
                             </thead>
 
                             <tbody>
-                                {formData?.details.map((row, index) => (
+                                {formData?.serviceDetails.map((row, index) => (
                                     <DpeTableRow
                                         key={index}
                                         row={row}
@@ -558,17 +563,29 @@ const Add: React.FC = () => {
                 <button
                     type="submit"
                     onClick={handleRazorpayPayment}
-                    className={`btn btn-warning btn-sm px-4 custom-form-control position-relative ${submitting ? "loading" : ""}`}
-                    disabled={submitting || (!(paymentRecord.length > 0) || canPay)}
+                    className={`btn btn-warning btn-sm px-4 custom-form-control position-relative ${isPaymenting ? "loading" : ""}`}
+                    disabled={isPaymenting || (!(paymentRecord.length > 0) || canPay)}
+                    style={{
+                        minWidth: "100px"
+                    }}
+                >
+                    {isPaymenting && <span className="spinner-center"></span>}
+                    {!isPaymenting && <span className="btn-text">Payment through POS</span>}
+                </button>
+                <button type="submit" className="btn btn-sm  btn-dark custom-form-control ">
+                    Print Payment
+                </button>
+
+                <button
+                    onClick={() => saveRow()}
+                    className={`btn btn-success btn-sm px-4 custom-form-control position-relative ${submitting ? "loading" : ""}`}
+                    disabled={!(formData?.serviceDetails?.length > 0) || submitting}
                     style={{
                         minWidth: "100px"
                     }}
                 >
                     {submitting && <span className="spinner-center"></span>}
-                    {!submitting && <span className="btn-text">Payment through POS</span>}
-                </button>
-                <button type="submit" className="btn btn-sm  btn-dark custom-form-control ">
-                    Print Payment
+                    {!submitting && <span className="btn-text">Submit</span>}
                 </button>
             </div>
 

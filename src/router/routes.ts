@@ -1,4 +1,4 @@
-import React, { lazy, ReactNode, LazyExoticComponent, ComponentType } from 'react';
+import  { lazy, ReactNode, LazyExoticComponent, ComponentType } from 'react';
 
 interface BaseNavItem {
   component: LazyExoticComponent<ComponentType<any>> | ComponentType<any>;
@@ -18,6 +18,10 @@ type NavItem = BaseNavItem | NavGroup;
 
 
 const routes: NavItem[] = [
+  { url: '/editDocUpload', component: lazy(() => import('@/pages/agents/application/document/Search')), },
+  { url: '/addDocUpload', component: lazy(() => import('@/pages/agents/application/document/Add')), },
+  { url: '/viewDocUpload', component: lazy(() => import('@/pages/containerOperation/transactions/documentView/Search')), },
+
   { url: '/addDpeServiceCharge', component: lazy(() => import('@/pages/containerOperation/transactions/directPortSvcCharge/Add')), },
   { url: '/editDpeServiceCharge', component: lazy(() => import('@/pages/containerOperation/transactions/directPortSvcCharge/Search')), },
   { url: '/addGateOut', component: lazy(() => import('@/pages/containerOperation/transactions/getOutContainer/Add')), },
@@ -26,7 +30,7 @@ const routes: NavItem[] = [
   { url: '/editGateIn', component: lazy(() => import('@/pages/containerOperation/transactions/gainInContainer/Search')), },
   { url: '/addUserAccess', component: lazy(() => import('@/pages/security/transactions/userAccess/Add')), },
   { url: '/editUserAccess', component: lazy(() => import('@/pages/security/transactions/userAccess/Edit')), },
- 
+
   { url: '/dashboard', component: lazy(() => import('@/pages/Dashboard')) },
 ];
 

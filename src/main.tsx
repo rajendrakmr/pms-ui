@@ -9,8 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import "react-toastify/dist/ReactToastify.css";
 
-import App from "@/App";
-import "@/components/pageSettings/ToggleSwitch.css"
+import App from "@/App"; 
 import { PersistGate } from "redux-persist/integration/react";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

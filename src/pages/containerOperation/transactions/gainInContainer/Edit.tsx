@@ -7,8 +7,9 @@ import RowFormCheckField from "@/components/Form/RowFormCheckField";
 import PopUpCheckBox from "@/components/PopUpCheckBox";
 import { containerStatusOption, fromLocationGateInOption, gateInOption, icdFcsOption, securityOption, statusOption, transhipmentOption, voyageOption } from "@/pages/options";
 import { setBreadcrumbs } from "@/store/slice/bredCrumbs";
-import { useDispatch } from "react-redux"; 
-import { searchConfig } from "@/utils/commonHelper";  
+import { useDispatch } from "react-redux";
+import { searchConfig } from "@/utils/commonHelper";
+import { useNavigate } from "react-router-dom";
 export interface Column {
     id: number;
     key: string;
@@ -51,18 +52,18 @@ const Edit: React.FC<SettingsModalProps> = ({
         setErrors({ ...errors, [e.target.name]: "" });
     };
     const validationRules: ValidationRules = {
-        vehicleNo: { required: true, minLength: 8, maxLength: 15 },
-        fromLocId: { required: true, minLength: 2, maxLength: 20 },
+         vehicleNo: { required: true, minLength: 8, maxLength: 15 },
+        fromLocationName: { required: true, minLength: 1, maxLength: 255 },
         locationName: { required: true, minLength: 2, maxLength: 255 },
-        portName: { required: true, minLength: 2, maxLength: 255 },
         agentNames: { required: true, minLength: 2, maxLength: 255 },
         linerCode: { required: true, minLength: 2, maxLength: 15 },
         linerName: { required: true, minLength: 2, maxLength: 255 },
-        containerNo: { required: true, minLength: 11, maxLength: 11 },
+        containerNo: { required: true, minLength: 11, maxLength: 12 },
         quantity: { required: true, gt: true, minLength: 1, maxLength: 15 },
+        portName: { required: true, minLength: 1, maxLength: 255 },
         eir: { required: true, minLength: 2, maxLength: 20 },
         chitNo: { required: true, minLength: 2, maxLength: 20 },
-         gateInThrough: { required: true, minLength: 1, maxLength: 20 }
+        gateInThrough: { required: true, minLength: 1, maxLength: 20 }
     };
 
     const handleFormSubmit = async (e: React.FormEvent) => {
@@ -77,10 +78,39 @@ const Edit: React.FC<SettingsModalProps> = ({
         }
         setSubmitting(true)
         const payload = {
+            // chitNo: formData?.chitNo,
+            // vehicleNo: formData?.vehicleNo,
+            // fromLocId: formData?.fromLocId,
+            // toLocId: formData?.locationCode,
+            // impExpTrns: formData?.impExpTrns,
+            // beSbNo: formData?.beSbNo,
+            // chAgentCode: formData?.agentCode,
+            // vesselNo: formData?.vesselNo,
+            // vesselName: formData?.vesselName,
+            // voyageNo: formData?.voyageNumber,
+            // shipperName: formData?.shipperName,
+            // localOrigin: formData?.localOrigin,
+            // portOfDestination: formData?.portCode,
+            // weightmentFlag: formData?.weightmentFlag,
+            // securityWall: formData?.securityWall,
+            // gateInThrough: formData?.gateInThrough,
+            // containerNo: formData?.containerNo,
+            // containerStatus: formData?.containerStatus,
+            // cargoName: formData?.cargoName,
+            // packages: formData?.packages,
+            // quantity: formData?.quantity,
+            // linerCode: formData?.linerCode,
+            // linerName: formData?.linerName,
+            // eir: formData?.eir,
+            // icdCfsFcs: formData?.icdCfsFcs,
+            // hazardous: formData?.hazardous,
+            // customsExamination: formData?.customsExamination,
+            // shutOut: formData?.shutOut,
+            // foreignCoastalFlag: formData?.foreignCoastalFlag
             chitNo: formData?.chitNo,
             vehicleNo: formData?.vehicleNo,
-            fromLocId: formData?.fromLocId,
-            toLocId: formData?.locationCode,
+            fromLocId: formData?.locationCode,
+            toLocId: formData?.locationName,
             impExpTrns: formData?.impExpTrns,
             beSbNo: formData?.beSbNo,
             chAgentCode: formData?.agentCode,
@@ -95,7 +125,7 @@ const Edit: React.FC<SettingsModalProps> = ({
             gateInThrough: formData?.gateInThrough,
             containerNo: formData?.containerNo,
             containerStatus: formData?.containerStatus,
-            cargoName: formData?.cargoName,
+            cargoName: formData?.cargoCode,
             packages: formData?.packages,
             quantity: formData?.quantity,
             linerCode: formData?.linerCode,
@@ -132,10 +162,11 @@ const Edit: React.FC<SettingsModalProps> = ({
     const onChangeSelect = useCallback(async (field: any, query?: any) => {
         setModal(true)
         setErrors({})
-        const cfg = searchConfig[field]; 
+        const cfg = searchConfig[field];
         cfg.search = query ? query : ""
         setConfig(cfg)
     }, [])
+     const navigate = useNavigate();
     return (
 
         <div className="_rkContentBorder container-fluid py-3" style={{ border: "1px solid black", marginTop: "7px", marginBottom: "70px" }}>
@@ -151,12 +182,26 @@ const Edit: React.FC<SettingsModalProps> = ({
                     style={{ fontSize: "11px" }}
                     className="text-white"
                     onClick={(e) => {
+                        navigate("/addGateIn");
                         e.preventDefault();
                         setIsEdit(false)
                     }}
                 >
-                    Back to Search Page
+                         Click here to add new Gate In Container
                 </a>
+                {/* <a
+                    href="#"
+                    style={{ fontSize: "11px" }}
+                    className="text-white"
+                    onClick={(e) => {
+                        navigate("/addDpeServiceCharge");
+                        e.preventDefault();
+                        setIsEdit(false);
+                        setInitialForm({})
+                    }}
+                >
+                    Click here to add new DPESC
+                </a> */}
             </div>
 
             <form onSubmit={handleFormSubmit}>
@@ -165,11 +210,10 @@ const Edit: React.FC<SettingsModalProps> = ({
                     <RowFormInputField label="In Time" name="txtInTime" inputValue={formData.txtInTime} error={errors.txtInTime} required onChange={handleChange} isDefault={true} />
                     <RowFormInputField label="Vehicle No" max={15} name="vehicleNo" inputValue={formData.vehicleNo} error={errors.vehicleNo} required onChange={handleChange} />
 
-                    <RowFormSelectField name="impExpTrns" label="Imp/Exp/Trans" options={transhipmentOption} value={formData.impExpTrns} error={errors.impExpTrns} onChange={handleSelectChange} isLoading={false} formData={formData} />
-                    <RowFormSelectField name="fromLocId" label="From Location" options={fromLocationGateInOption} value={formData.fromLocId} error={errors.fromLocId} onChange={handleSelectChange} isLoading={false} formData={formData} />
+                    <RowFormSelectField name="impExpTrns" label="Import/Export" options={transhipmentOption} value={formData.impExpTrns} error={errors.impExpTrns} onChange={handleSelectChange} isLoading={false} formData={formData} />
+                    <RowFormCheckField label="From Location" isDefault={true} name="fromLocationName" inputValue={formData.fromLocationName} error={errors.fromLocationName} required onChange={handleChange} click={() => onChangeSelect("gateOutLocation", formData?.fromLocationName)} />
+                    <RowFormSelectField name="locationName" label="To Location" options={fromLocationGateInOption} value={formData.locationName} error={errors.locationName} onChange={handleSelectChange} isLoading={false} formData={formData} />
 
-
-                    <RowFormCheckField label="To Location" isDefault={true} name="locationName" inputValue={formData.locationName} error={errors.locationName} required onChange={handleChange} click={() => onChangeSelect("location", formData.locationCode)} />
                     <RowFormInputField label="BE / SB No" max={20} name="beSbNo" inputValue={formData.beSbNo} error={errors.beSbNo} onChange={handleChange} />
                     <RowFormCheckField label="CH Agent Name" isDefault={true} name="agentNames" inputValue={formData.agentNames} error={errors.agentNames} required onChange={handleChange} click={() => onChangeSelect("agent", formData.agentCode)} />
 
@@ -184,7 +228,7 @@ const Edit: React.FC<SettingsModalProps> = ({
                     <RowFormSelectField name="securityWall" label="Security Wall" options={securityOption} value={formData.securityWall} error={errors.securityWall} onChange={handleSelectChange} isLoading={false} formData={formData} />
                     <RowFormSelectField name="gateInThrough" label="Gate In Through" options={gateInOption} value={formData.gateInThrough} error={errors.gateInThrough} onChange={handleSelectChange} required isLoading={false} formData={formData} />
 
-                </div> 
+                </div>
                 <div className="text-white px-3 mb-3 mt-2 fw-bold" style={{ backgroundColor: "#023e8a" }}>
 
                     <span style={{ fontSize: "12px" }}>

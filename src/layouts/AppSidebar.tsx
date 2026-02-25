@@ -50,7 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isToggle }) => {
       parentKey = ""
     ): boolean => {
       return items?.some((item, index) => {
-        const key = `${parentKey}${level}-${index}-${item.name}`;
+        const key = `${parentKey}${level}-${index}-${item?.name}`;
         const selfActive = currentPath === item.menuLinkName;
 
         let childActive = false;
@@ -88,8 +88,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isToggle }) => {
   ) => (
     <ul className={`menu-level menu-level-${level}`}>
       {items?.map((item, index) => {
-        const key = `${parentKey}${level}-${index}-${item.name}`;
-        const hasChildren = !!item.children?.length;
+        const key = `${parentKey}${level}-${index}-${item?.name}`;
+        const hasChildren = !!item?.children?.length;
         const isOpen = openMenus[key];
         const isActive = activeMenus[key];
 
@@ -109,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isToggle }) => {
                   />
                 </>
               ) : (
-                <Link to={item.menuLinkName} className="menu-link">
+                <Link to={item?.menuLinkName} className="menu-link">
                   {item?.menuNameTree}
                 </Link>
               )}

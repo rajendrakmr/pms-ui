@@ -10,22 +10,20 @@ import { setMenu } from "@/store/slice/menuSlice";
 // import { RootState } from "@reduxjs/toolkit/query";
 
 
-const Dashboard: React.FC = () => {  
+const Dashboard: React.FC = () => {
   const dispatch = useDispatch();
   const currentId: any = useSelector((state: RootState) => state.auth.userId);
 
   const cleanedUserId = extractUserId(currentId);
- 
-  const { data, isLoading } = useGetMenuQuery(cleanedUserId!, {skip: !cleanedUserId,});
-const menus: any = useSelector((state: RootState) => state);
-console.log('menusmenus',menus)
+
+  const { data, isLoading } = useGetMenuQuery(cleanedUserId!, { skip: !cleanedUserId, });
+  const menus: any = useSelector((state: RootState) => state);
+
   useEffect(() => {
     if (data?.success?.length) {
-      dispatch(setMenu(data?.success)); 
+      dispatch(setMenu(data?.success));
     }
-  }, [data, dispatch]);
-  console.log(data, "menu data");
-
+  }, [data, dispatch]); 
 
 
   useEffect(() => {

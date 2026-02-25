@@ -28,7 +28,7 @@ const Search: React.FC = () => {
         foreignCoastalFlag: "",
         containerSize: "",
         zoneId: "",
-        serviceDetails: []
+        details: []
     }
 
     const dispatch = useDispatch();
@@ -41,9 +41,9 @@ const Search: React.FC = () => {
     useEffect(() => {
         dispatch(
             setBreadcrumbs([
-                { label: "Container Operation", path: "" },
-                { label: "Transaction", path: "" },
-                { label: "Direct Port Entry Service Charges", path: "" },
+                { label: "Agent", path: "" },
+                { label: "Application", path: "" },
+                { label: "Document Upload", path: "" },
                 { label: "Edit" }
             ])
         );
@@ -69,40 +69,27 @@ const Search: React.FC = () => {
 
 
     const navigate = useNavigate();
-    return (isEdit && formData?.serviceDetails.length > 0 ? (<Edit setIsEdit={setIsEdit} initialForm={formData} setInitialForm={setFormData} apiRequest={apiRequest} />) : (
+    return (isEdit && formData.details.length > 0 ? (<Edit setIsEdit={setIsEdit} initialForm={formData} setInitialForm={setFormData} apiRequest={apiRequest} />) : (
         <div className="_rkContentBorder container-fluid py-3" style={{ border: "1px solid black", marginTop: "7px", marginBottom: "70px" }}>
             <div
                 className="d-flex justify-content-between align-items-center text-white px-3 py-1 mb-3 fw-bold"
                 style={{ backgroundColor: "#023e8a" }}
             >
                 <span style={{ fontSize: "12px" }}>
-                    👉 DPE Service Charge &gt;&gt; Search
+                    👉 Document Upload &gt;&gt; Search
                 </span>
-
-                <a
-                    href="#"
-                    style={{ fontSize: "11px" }}
-                    className="text-white"
-                    onClick={(e) => {
-                        navigate("/addDpeServiceCharge");
-                        e.preventDefault(); 
-                    }}
-                >
-                    Click here to add new DPESC
-                </a>
             </div>
             <div className="row">
-                <RowFormCheckField label="Container No" isDefault={true} name="containerNo" inputValue={formData.containerNo} error={errors.containerNo} required onChange={handleChange} click={() => onChangeSelect("container", formData.containerNo)} />
-                <RowFormCheckField label="Admission Chit No" isDefault={true} name="containerNo" inputValue={formData.containerNo} error={errors.containerNo} required onChange={handleChange} click={() => onChangeSelect("container", formData.containerNo)} />
+                <RowFormCheckField label="Vessel No" isDefault={true} name="containerNo" inputValue={formData.containerNo} error={errors.containerNo} required onChange={handleChange} click={() => onChangeSelect("container", formData.containerNo)} />
             </div>
-            <div className="text-white px-3 mb-3 mt-2 fw-bold" style={{ backgroundColor: "#023e8a" }}>
+            {/* <div className="text-white px-3 mb-3 mt-2 fw-bold" style={{ backgroundColor: "#023e8a" }}>
                 <span style={{ fontSize: "12px" }}>
                     ➤ Details
                 </span>
-            </div>
+            </div> */}
             <div className="row">
                 <div className="col-12">
-                    <div style={{ overflowX: "auto" }}>
+                    {/* <div style={{ overflowX: "auto" }}>
                         <table className="custom-table text-white">
                             <thead style={{ backgroundColor: "#023e8a" }}>
                                 <tr>
@@ -126,20 +113,20 @@ const Search: React.FC = () => {
                             </thead>
 
                             <tbody>
-                                {(isEdit && formData?.serviceDetails?.length === 0) && <tr>
-                                    <td colSpan={12} style={{ color: "black", height: "40px" }} className="text-center">{isEdit && formData?.serviceDetails?.length === 0 ? "Records not found" : ""} <a
+                                {(isEdit && formData?.details?.length === 0) && <tr>
+                                    <td colSpan={12} style={{ color: "black", height: "40px" }} className="text-center">{isEdit && formData?.details?.length === 0 ? "Records not found" : ""} <a
                                         href="#"
                                         style={{ fontSize: "11px" }}
                                         onClick={(e) => { e.preventDefault(); navigate("/addDpeServiceCharge") }}
                                     >
-                                        Click here to add new DPESC
+                                        Click here to Add New
                                     </a></td>
                                 </tr>}
                             </tbody>
                         </table>
-                    </div>
+                    </div> */}
 
-                    <button
+                    {/* <button
                         type="button"
                         disabled
                         className="btn btn-primary btn-sm mt-2 mr-4"
@@ -150,13 +137,13 @@ const Search: React.FC = () => {
                         }}
                     >
                         + Add Row
-                    </button>
+                    </button> */}
 
 
                 </div>
             </div>
 
-            <div className="d-flex gap-3 justify-content-end">
+            {/* <div className="d-flex gap-3 justify-content-end">
                 <button
                     type="submit"
                     className={`btn btn-warning btn-sm px-4 custom-form-control position-relative ${false ? "loading" : ""}`}
@@ -170,7 +157,7 @@ const Search: React.FC = () => {
                 <button type="submit" disabled className="btn btn-sm  btn-dark custom-form-control ">
                     Print Payment
                 </button>
-            </div>
+            </div> */}
 
             {
                 modal && <PopUpCheckBox

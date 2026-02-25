@@ -18,11 +18,13 @@ interface InputFormFieldProps {
     row?: string;
     col1?: string;
     col2?: string;
+    defaultVal?: boolean;
 }
 
 const RowFormCheckField: React.FC<InputFormFieldProps> = memo(({
     label,
     placeholder,
+    defaultVal = false,
     type = 'text',
     name,
     inputValue,
@@ -36,7 +38,8 @@ const RowFormCheckField: React.FC<InputFormFieldProps> = memo(({
     row = "col-md-4",
     col1 = "col-sm-5 col-4",
     col2 = "col-sm-7 col-8",
-    click
+    click,
+
 }) => {
 
     const handleNumberInput = (e: ChangeEvent<HTMLInputElement>) => {
@@ -71,10 +74,10 @@ const RowFormCheckField: React.FC<InputFormFieldProps> = memo(({
             </label>
             <div className={col2} style={{ padding: '0px 3px 3px 0px' }} >
                 <div className="input-group" style={{ width: "105%" }}>
-                   
+
                     <input
                         type={inputType}
-                        className={`form-control valid ${error ? 'is-invalid' : ''}`}
+                        className={`form-control ${defaultVal? 'custom-winput-bg':'custom-input-bg'} valid ${error ? 'is-invalid' : ''}`}
                         id={name}
                         disabled={isDefault}
 
@@ -87,19 +90,21 @@ const RowFormCheckField: React.FC<InputFormFieldProps> = memo(({
                         min={0}
                         aria-describedby="validationTooltipUsernamePrepend"
                         // placeholder={placeholder || `Enter ${label}`}
-                        style={{
-                            // width:'100%', 
+                        style={{ 
                             padding: "0 0 0 4px",
                             borderRadius: "0px",
+                            backgroundColor: "#3be4e4b3 !impotant",
+                            // backgroundColor: isDefault ? "#8ab5ee !important" : "#fff",
                             ...(required
                                 ? {
                                     fontWeight: "400",
-                                    backgroundColor: isDefault ? "#fff" : "#fff",
+                                    
                                 }
-                                : {}),
+                                : {}), 
                         }}
                     />
-                     <div className="input-group-prepend"
+                    {!defaultVal &&
+                    <div className="input-group-prepend"
                         onClick={click as any}
                     >
                         <span className="input-group-text" style={{
@@ -108,7 +113,7 @@ const RowFormCheckField: React.FC<InputFormFieldProps> = memo(({
                             cursor: "pointer",
                             borderRadius: "0px"
                         }} id="validationTooltipUsernamePrepend">🔍</span>
-                    </div>
+                    </div>}
                 </div>
                 {error && <span className="text-danger" style={{ fontSize: "11px", marginTop: "0" }}>{error}</span>}
             </div>

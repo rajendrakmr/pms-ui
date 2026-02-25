@@ -10,6 +10,7 @@ import moment from 'moment'
 import Edit from "./Edit";
 import LoadingFetchLoader from "@/components/LoadingFetchLoader";
 import { fetchCommonData, searchConfig } from "@/utils/commonHelper";
+import { useNavigate } from "react-router-dom";
 export interface Column {
     key: string;
     label: string;
@@ -102,11 +103,10 @@ const Search: React.FC = () => {
             const response = await apiRequest({ url, method: "GET" });
             if (response?.success) {
                 const item = response?.success
-                console.log('itemitemitemitem', item, item?.gate_out_through)
                 setFormEditData({
                     chitNo: item?.chit_no,
                     vehicleNo: item?.vehicle_no,
-                    fromLocId: item?.from_loc_id,
+                    fromLocationName: response?.formLocationName,
                     txtInTime: moment(item?.gateInDateTime).format('DD/MM/YYYY h:mm'),
                     impExpTrns: item?.imp_exp_trns,
                     beSbNo: item?.boe_no,
@@ -131,13 +131,13 @@ const Search: React.FC = () => {
                     portName: response?.portName,
                     cargoName: response?.cargoName,
                     agentNames: response?.agentName,
-                    locationName: response?.locationName,
+                    locationName: item?.to_loc_id,
                     shipperName: item?.shipper,
                     agentCode: item?.party_cd,
                     cargoCode: item?.cargo_code,
                     portCode: item?.trn_shp_port,
-                    locationCode: item?.to_loc_id,
                     linerCode: item?.sical_line_code,
+                    locationCode: item?.from_loc_id,
                 });
                 let api_url = searchConfig['vessel'].url;
                 const pagination = '?size=10&page=0'
@@ -196,7 +196,7 @@ const Search: React.FC = () => {
 
     const columns: Column[] = [
         { key: "chit_no", label: "Chit No" },
-        { key: "container_no", label: "In Container No" },
+        { key: "container_no", label: "Container No" },
         { key: "vehicle_no", label: "Vehicle No" },
         { key: "gateInDateTime", label: "Time (DD/MM/YYYY HH:MI)" },
         { key: "party_cd", label: "Agent" },
@@ -206,7 +206,7 @@ const Search: React.FC = () => {
         { key: "container_size", label: "Container Size" },
         { key: "foreign_coastal_flag", label: "Voyage" }
     ]
-
+    const navigate = useNavigate();
 
     return (isEdit ? (<Edit initialForm={formEditData} setIsEdit={setIsEdit} apiRequest={apiRequest} />) :
         (<div className="_rkContentBorder container-fluid py-3" style={{ border: "1px solid black", marginTop: "7px", marginBottom: "70px" }}>
@@ -218,23 +218,23 @@ const Search: React.FC = () => {
                     👉 Gate In - Container &gt;&gt; Search
                 </span>
 
-                {/* <a
+                <a
                     href="#"
                     style={{ fontSize: "11px" }}
                     className="text-white"
                     onClick={(e) => {
+                        navigate("/addGateIn");
                         e.preventDefault();
-                        console.log("Add clicked");
                     }}
                 >
-                    Click here to add new Container Gate In
-                </a> */}
+                    Click here to add new Gate In Container
+                </a>
             </div>
 
             <form onSubmit={handleSearchForm}>
                 <div className="row">
                     <RowFormInputField row="col-md-3" col1="col-md-4" col2="col-md-8" label="Chit No" name="chitNo" inputValue={formData.chitNo} error={errors.chitNo} onChange={handleChange} />
-                    <RowFormInputField row="col-md-3" col1="col-md-4" col2="col-md-8" label="In Container No" name="containerNo" inputValue={formData.containerNo} error={errors.containerNo} onChange={handleChange} />
+                    <RowFormInputField row="col-md-3" col1="col-md-4" col2="col-md-8" label="Container No" name="containerNo" inputValue={formData.containerNo} error={errors.containerNo} onChange={handleChange} />
                     <RowFormInputField row="col-md-3" col1="col-md-4" col2="col-md-8" label="Vehicle No" name="vehicleNo" inputValue={formData.vehicleNo} error={errors.vehicleNo} onChange={handleChange} />
                     <RowFormInputField row="col-md-3" col1="col-md-4" col2="col-md-8" placeholder="DD-MM-YYYY" label="Date" name="gateInDate" inputValue={formData.gateInDate} error={errors.gateInDate} onChange={handleChange} />
                     <RowFormInputField row="col-md-3" col1="col-md-4" col2="col-md-8" label="Agent" name="agent" inputValue={formData.agent} error={errors.agent} onChange={handleChange} />
@@ -277,7 +277,7 @@ const Search: React.FC = () => {
                     <thead className="text-white">
                         <tr>
                             {columns?.map((column) => (
-                                <th>{column.label}</th>
+                                <th key={column.key}>{column.label}</th>
                             ))}
                         </tr>
                     </thead>

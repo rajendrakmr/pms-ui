@@ -1,25 +1,16 @@
 import React, { Suspense, FC } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import NotFoundPage from '@/pages/NotFoundPage';
-import routes from '@/router/routes';
-import BredCrumbs from './BredCrumbs';
+import routes from '@/router/routes'; 
 
-
-interface AppRoute {
-  url: string;
-  exact?: boolean;
-  name: string;
-  component: React.ComponentType;
-  
-}
-
-interface appContentProps<T = any> { 
+ 
+interface appContentProps<T = any> {
   isToggle: boolean;
 }
-const AppContent: FC<appContentProps> = ({isToggle}) => {
+const AppContent: FC<appContentProps> = ({ isToggle }) => {
 
   return (
-    <div className={`rk_content ${isToggle?"rkToogleContent":""}`} id="kt_app_main">
+    <div className={`rk_content ${isToggle ? "rkToogleContent" : ""}`} id="kt_app_main">
       {/* <BredCrumbs /> */}
       <Suspense
         fallback={
@@ -29,7 +20,7 @@ const AppContent: FC<appContentProps> = ({isToggle}) => {
         }
       >
         <Routes>
-          {routes.map((route: AppRoute, idx: number) => { 
+          {routes.map((route: any, idx: number) => {
             return (
               route.component && (
                 <Route

@@ -81,6 +81,17 @@ export const searchConfig: any = {
       { field: 'voyageNumber', header: 'Voyage No' }
     ]
   },
+  gateOutLocation: {
+    title: 'Select To Location',
+    url: '/api/locations',
+    exec: "&exclude=LOC001",
+    field: "locationCode",
+    dispField: "fromLocationName",
+    columns: [
+      { field: 'code', header: 'Code' },
+      { field: 'name', header: 'Name' },
+    ]
+  },
   location: {
     title: 'Select To Location',
     url: '/api/locations',
@@ -145,8 +156,26 @@ export const extractUserId = (value: string): string => {
 
 export const isCheckedChild = async (row: any, menuId: string) => { return row.some((element: any) => element.menuId !== menuId && element.checked === 1 && element.leaf === 1); }
 export const checkParentMenuCheck = async (row: any, menuId: string) => {
+  console.log('rowrowrow', row, menuId)
   return row.some((element: any) => element.menuId !== menuId && element.checked === 1 && element.leaf === 1);
 }
+
+
+export const checkParentNodeMenuCheck = async (row: any, menuId: string) => {
+  const currentItem = row.find((item: any) => item.menuId === menuId);
+  if (!currentItem) return false;
+
+  return row.some((element: any) =>
+    element.moduleId === currentItem.moduleId &&
+    element.menuId !== menuId &&
+    element.leaf === 1 &&
+    element.checked === 1
+  );
+};
+
+// export const checkParentMenuCheck = async (row: any, menuId: string) => {
+//   return row.some((element: any) => element.menuId !== menuId && element.checked === 1 && element.leaf === 1);
+// }
 export const fetchCommonData = async ({
   url,
   setForm,
