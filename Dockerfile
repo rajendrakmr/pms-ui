@@ -23,7 +23,7 @@ FROM nginx:stable-alpine AS deployer
 RUN rm /etc/nginx/conf.d/default.conf
 
 #copy custom nginx config 
-COPY nginx.conf /etc/nginx/conf.d/
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 #copy the build output from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
