@@ -33,8 +33,8 @@ git clone https://github.com/rajendrakmr/pms-ui.git
 cd pms-ui
 npm install --legacy-peer-deps
 ```
-
-
+## 📦 Before run application please confirm Enviroment variable in .env file
+## Update your backend url
 ## 📦 Run application
 ```bash
 npm run dev 
